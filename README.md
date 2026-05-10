@@ -18,10 +18,7 @@ Scaling · Databases · DNS · Containerization · Serverless · Data Analytics 
 
 ## Share it
 
-Since it's pure static HTML/CSS/JS, you can:
-
-- Push to GitHub and enable **GitHub Pages** (Settings → Pages → Source: `main` branch, `/` root).
-- Or just zip the folder and share.
+Since it's pure static HTML/CSS/JS, you can just zip the folder and share.
 
 ## Tech
 
