@@ -1,0 +1,345 @@
+/* AWS SAA-C03 Mind Maps - shared styles */
+:root {
+  --bg: #0f1419;
+  --bg-elev: #161d26;
+  --bg-card: #1b2330;
+  --border: #2a3441;
+  --text: #e6edf3;
+  --text-dim: #8b98a5;
+  --accent: #ff9900;
+  --accent-2: #569af3;
+  --ok: #3fb950;
+  --warn: #d29922;
+  --err: #f85149;
+  --shadow: 0 4px 16px rgba(0,0,0,.35);
+  --radius: 10px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--font); }
+a { color: var(--accent-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------- Header ---------- */
+.page-header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 24px; background: var(--bg-elev); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+}
+.page-header h1 { margin: 0; font-size: 18px; font-weight: 600; }
+.page-header .back { font-size: 14px; color: var(--text-dim); }
+.page-header .actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.page-header button, .page-header .btn {
+  background: var(--bg-card); color: var(--text); border: 1px solid var(--border);
+  padding: 7px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; font-family: inherit;
+}
+.page-header button:hover, .page-header .btn:hover { background: var(--border); }
+.page-header .btn.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+
+/* ---------- Landing page ---------- */
+.hero {
+  padding: 48px 24px 24px; text-align: center;
+  background: radial-gradient(ellipse at top, rgba(255,153,0,.15), transparent 60%);
+}
+.hero h1 { font-size: 42px; margin: 0 0 8px; letter-spacing: -.5px; }
+.hero p { color: var(--text-dim); font-size: 16px; margin: 0; }
+.hero .tag {
+  display: inline-block; padding: 4px 10px; background: rgba(255,153,0,.15); color: var(--accent);
+  border-radius: 999px; font-size: 12px; font-weight: 600; margin-bottom: 14px; letter-spacing: .5px;
+}
+
+.global-search {
+  max-width: 720px; margin: 24px auto 0; position: relative;
+}
+.global-search input {
+  width: 100%; padding: 14px 18px 14px 46px; font-size: 15px;
+  background: var(--bg-card); color: var(--text); border: 1px solid var(--border);
+  border-radius: var(--radius); outline: none; font-family: inherit;
+}
+.global-search input:focus { border-color: var(--accent); }
+.global-search::before {
+  content: "🔍"; position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  opacity: .6; font-size: 16px;
+}
+.search-results {
+  position: absolute; top: 100%; left: 0; right: 0; margin-top: 6px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  max-height: 420px; overflow: auto; box-shadow: var(--shadow); z-index: 50;
+  display: none;
+}
+.search-results.open { display: block; }
+.search-hit {
+  display: block; padding: 10px 16px; border-bottom: 1px solid var(--border);
+  color: var(--text); cursor: pointer;
+}
+.search-hit:last-child { border-bottom: 0; }
+.search-hit:hover, .search-hit.active { background: var(--bg-elev); text-decoration: none; }
+.search-hit .path { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+.search-hit mark { background: rgba(255,153,0,.35); color: var(--text); padding: 0 2px; border-radius: 3px; }
+
+/* ---------- Section grid ---------- */
+.grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px; padding: 24px; max-width: 1400px; margin: 0 auto;
+}
+.card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px; cursor: pointer; transition: transform .15s, border-color .15s;
+  display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden;
+}
+.card::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--card-color, var(--accent));
+}
+.card:hover { transform: translateY(-2px); border-color: var(--card-color, var(--accent)); text-decoration: none; }
+.card .icon { font-size: 26px; }
+.card .title { font-size: 17px; font-weight: 600; color: var(--text); }
+.card .summary { color: var(--text-dim); font-size: 13px; line-height: 1.45; }
+.card .meta {
+  display: flex; gap: 10px; margin-top: auto; padding-top: 8px; font-size: 11px; color: var(--text-dim);
+}
+.card .meta .pill {
+  background: var(--border); padding: 2px 8px; border-radius: 999px; color: var(--text);
+}
+
+/* ---------- Mindmap ---------- */
+.mindmap-container {
+  width: 100%; height: calc(100vh - 58px); overflow: hidden;
+  background: radial-gradient(circle at center, #13202e 0%, var(--bg) 70%);
+  position: relative; cursor: grab;
+}
+.mindmap-container.dragging { cursor: grabbing; }
+.mindmap-viewport {
+  position: absolute; left: 50%; top: 50%;
+  transform-origin: 0 0;
+  transition: transform .12s ease-out;
+  will-change: transform;
+}
+.mindmap { display: flex; align-items: center; padding: 40px; }
+.mindmap .children {
+  display: flex; flex-direction: column;
+  margin-left: 52px; gap: 8px;
+}
+.mindmap .branch {
+  display: flex; align-items: center;
+}
+.mindmap .node-wrap { display: flex; align-items: center; }
+.node {
+  position: relative; padding: 8px 14px; border-radius: 18px;
+  background: var(--node-color, var(--bg-card));
+  color: #111; font-size: 13px; font-weight: 500; line-height: 1.35;
+  border: 1px solid rgba(0,0,0,.12);
+  cursor: pointer; white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,.3);
+  user-select: none; transition: transform .12s;
+  max-width: 320px;
+}
+.node:hover { transform: scale(1.03); }
+.node.note-node { white-space: normal; font-weight: 400; }
+.node.root {
+  padding: 14px 24px; font-size: 18px; font-weight: 700; border-radius: 14px;
+  background: var(--section-color, var(--accent)); color: #000;
+}
+.node.level-1 {
+  padding: 10px 18px; font-size: 15px; font-weight: 600; border-radius: 22px;
+  background: var(--section-color, var(--accent)); color: #000;
+}
+.node.level-2 { background: var(--section-color-2, #4fb3e6); color: #001624; }
+.node.level-3 { background: var(--section-color-3, #d1e7f5); color: #031024; }
+.node.level-4 { background: #eff3f7; color: #0d1a26; }
+.node.leaf-note {
+  background: transparent; color: var(--text-dim); border: 1px dashed var(--border);
+  font-weight: 400; font-size: 12px; white-space: normal; max-width: 360px;
+  box-shadow: none;
+}
+.node .chev {
+  display: inline-block; margin-left: 6px; font-size: 10px; opacity: .7; transition: transform .15s;
+}
+.node.collapsed .chev { transform: rotate(-90deg); }
+.node.collapsed + .children { display: none; }
+.node.no-children .chev { display: none; }
+
+.connectors {
+  position: absolute; left: 0; top: 0; pointer-events: none;
+  overflow: visible;
+}
+.connectors path { fill: none; stroke: var(--border); stroke-width: 1.6; opacity: .9; }
+
+/* ---------- Quiz ---------- */
+.quiz-wrap {
+  max-width: 680px; margin: 40px auto; padding: 0 20px;
+}
+.quiz-progress {
+  display: flex; justify-content: space-between; color: var(--text-dim); font-size: 13px; margin-bottom: 10px;
+}
+.quiz-progress-bar {
+  height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 20px;
+}
+.quiz-progress-bar > div { height: 100%; background: var(--accent); transition: width .2s; }
+.flashcard {
+  perspective: 1200px; height: 360px; margin-bottom: 20px;
+}
+.flashcard-inner {
+  position: relative; width: 100%; height: 100%; transition: transform .6s;
+  transform-style: preserve-3d; cursor: pointer;
+}
+.flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+.flashcard-face {
+  position: absolute; inset: 0; padding: 28px 28px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  display: flex; flex-direction: column; backface-visibility: hidden;
+  overflow: auto;
+}
+.flashcard-back { transform: rotateY(180deg); }
+.flashcard .path { color: var(--text-dim); font-size: 12px; margin-bottom: 10px; letter-spacing: .3px; }
+.flashcard .prompt { font-size: 22px; font-weight: 600; margin: 0 0 14px; }
+.flashcard .hint { color: var(--text-dim); font-size: 12px; margin-top: auto; }
+.flashcard ul { margin: 0; padding-left: 20px; line-height: 1.6; }
+.flashcard ul ul { margin-top: 4px; }
+.flashcard li { margin-bottom: 4px; }
+.flashcard .label { color: var(--accent); font-size: 12px; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600;}
+.quiz-controls { display: flex; gap: 10px; flex-wrap: wrap; }
+.quiz-controls button {
+  flex: 1; padding: 12px; background: var(--bg-card); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 14px; font-family: inherit;
+}
+.quiz-controls button:hover { background: var(--border); }
+.quiz-controls .btn-known { border-color: var(--ok); color: var(--ok); }
+.quiz-controls .btn-unknown { border-color: var(--err); color: var(--err); }
+.quiz-controls .btn-flip { border-color: var(--accent-2); color: var(--accent-2); }
+.quiz-setup {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px;
+}
+.quiz-setup h2 { margin-top: 0; }
+.quiz-setup label { display: block; margin: 14px 0 6px; color: var(--text-dim); font-size: 13px; }
+.quiz-setup select, .quiz-setup input {
+  width: 100%; padding: 10px 12px; background: var(--bg-elev); color: var(--text);
+  border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-family: inherit;
+}
+.quiz-setup .start {
+  width: 100%; margin-top: 20px; padding: 12px; background: var(--accent); color: #000;
+  border: 0; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer;
+}
+.quiz-summary { text-align: center; padding: 40px 20px; }
+.quiz-summary .score { font-size: 48px; font-weight: 700; color: var(--accent); }
+
+/* ---------- Utility ---------- */
+.kbd {
+  display: inline-block; padding: 1px 6px; background: var(--bg-elev);
+  border: 1px solid var(--border); border-radius: 4px; font-family: var(--mono); font-size: 11px;
+}
+.footer { padding: 24px; text-align: center; color: var(--text-dim); font-size: 12px; }
+
+
+/* ==================================================
+   Radial landing — mind-map style bubbles + center
+   ================================================== */
+.radial-hero {
+  padding: 28px 20px 12px; text-align: center;
+  background: radial-gradient(ellipse at top, rgba(255,153,0,.12), transparent 55%);
+}
+.radial-hero .tag {
+  display: inline-block; padding: 4px 10px; background: rgba(255,153,0,.15); color: var(--accent);
+  border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 1px; margin-bottom: 10px;
+}
+.radial-hero h1 { font-size: 34px; margin: 0 0 8px; letter-spacing: -.4px; }
+.radial-hero .sub { color: var(--text-dim); font-size: 14px; margin: 0 0 14px; }
+
+.progress-wrap {
+  max-width: 680px; margin: 16px auto 0;
+  display: flex; align-items: center; gap: 14px;
+}
+.progress-wrap .bar {
+  flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;
+}
+.progress-wrap .bar > div {
+  height: 100%; background: linear-gradient(90deg, var(--accent), #ffd27a);
+  width: 0; transition: width .35s ease;
+}
+.progress-wrap .pct {
+  color: var(--text-dim); font-size: 13px; font-variant-numeric: tabular-nums; min-width: 90px; text-align: right;
+}
+.progress-wrap .reset {
+  background: transparent; border: 1px solid var(--border); color: var(--text-dim);
+  padding: 5px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: inherit;
+}
+.progress-wrap .reset:hover { color: var(--text); border-color: var(--text-dim); }
+
+.radial {
+  position: relative;
+  width: 100%;
+  max-width: 1180px;
+  height: 780px;
+  margin: 10px auto 20px;
+}
+@media (max-width: 900px) {
+  .radial { height: auto; display: grid; grid-template-columns: 1fr; gap: 10px; padding: 16px; }
+  .radial .radial-center, .radial .radial-connectors { display: none; }
+  .radial .col { position: static !important; display: flex; flex-direction: column; gap: 10px; }
+  .radial .bubble { position: static !important; }
+}
+
+.radial .radial-connectors {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 1;
+}
+.radial .radial-connectors path {
+  fill: none; stroke-width: 2.2; opacity: .85;
+}
+
+.radial .radial-center {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffb347, #ff8c00 70%);
+  display: flex; align-items: center; justify-content: center;
+  color: #111; font-weight: 700; font-size: 17px; text-align: center; line-height: 1.2;
+  box-shadow: 0 0 0 6px rgba(255,153,0,.12), 0 10px 30px rgba(0,0,0,.4);
+  letter-spacing: .3px;
+}
+
+.radial .col { position: absolute; z-index: 2; display: flex; flex-direction: column; }
+.radial .col.left { left: 16px; top: 40px; bottom: 40px; align-items: flex-end; justify-content: space-between; }
+.radial .col.right { right: 16px; top: 40px; bottom: 40px; align-items: flex-start; justify-content: space-between; }
+
+.bubble {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 8px; border-radius: 999px;
+  background: transparent;
+  transition: opacity .2s, transform .15s;
+  position: relative;
+}
+.bubble.left-b { flex-direction: row-reverse; }
+.bubble:hover { transform: translateY(-1px); }
+.bubble .check-dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid var(--bubble-color, var(--text-dim));
+  background: transparent;
+  cursor: pointer; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  transition: background .15s, transform .1s;
+}
+.bubble .check-dot:hover { transform: scale(1.15); background: rgba(255,255,255,.08); }
+.bubble .check-dot::after {
+  content: ""; display: block;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--bubble-color, var(--text-dim));
+  opacity: 0; transform: scale(.5); transition: .15s;
+}
+.bubble.done .check-dot::after { opacity: 1; transform: scale(1); }
+.bubble.done .check-dot { background: rgba(255,255,255,.05); }
+.bubble .bubble-label {
+  color: var(--text); font-size: 15px; font-weight: 600;
+  padding: 6px 10px; border-radius: 6px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .15s;
+}
+.bubble .bubble-label:hover { color: var(--bubble-color, var(--accent)); text-decoration: none; }
+.bubble.done { opacity: .55; }
+.bubble.done .bubble-label { text-decoration: line-through; color: var(--text-dim); }
+.bubble.done .bubble-label:hover { text-decoration: line-through; }

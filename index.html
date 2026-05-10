@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AWS Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="page-header">
+    <h1>☁️ AWS Cloud</h1>
+  </header>
+
+  <section class="radial-hero">
+    <span class="tag">AWS CLOUD MAP</span>
+    <h1>AWS Cloud Mind Map</h1>
+    <p class="sub">Click a bubble's ring to mark done · Click the label to open the section</p>
+    <div class="global-search">
+      <input id="global-search" type="text" placeholder="Search any service, feature, or concept…" autocomplete="off">
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="bar"><div id="progress-fill"></div></div>
+      <span class="pct" id="progress-pct">0 / 17 · 0%</span>
+      <button class="reset" id="progress-reset" title="Clear progress">Reset</button>
+    </div>
+  </section>
+
+  <main>
+    <div class="radial" id="radial">
+      <svg class="radial-connectors" id="radial-connectors" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="radial-center">AWS<br>Cloud</div>
+      <div class="col left" id="col-left"></div>
+      <div class="col right" id="col-right"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    Study companion · Click the ring to track progress · Click the label to dive in
+  </footer>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/search.js"></script>
+  <script>
+    (function(){
+      // Order matching the screenshot style: 10 on right, 7 on left
+      const right = ["scaling", "compute", "access", "cdn", "storage", "messaging", "ml", "security", "vpc", "cost"];
+      const left  = ["databases", "dns", "containerization", "serverless", "analytics", "monitoring", "dr"];
+
+      const elLeft = document.getElementById('col-left');
+      const elRight = document.getElementById('col-right');
+
+      function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+      function makeBubble(key, side) {
+        const s = AWS_DATA.sections[key];
+        if (!s) return null;
+        const b = document.createElement('div');
+        b.className = 'bubble ' + (side === 'left' ? 'left-b' : 'right-b');
+        b.dataset.key = key;
+        b.style.setProperty('--bubble-color', s.color);
+        b.innerHTML =
+          '<button class="check-dot" aria-label="Mark ' + escapeHtml(s.title) + ' done" title="Mark done"></button>' +
+          '<a class="bubble-label" href="sections/' + key + '.html">' + escapeHtml(s.title) + '</a>';
+        return b;
+      }
+
+      right.forEach(k => { const b = makeBubble(k, 'right'); if (b) elRight.appendChild(b); });
+      left.forEach(k => { const b = makeBubble(k, 'left'); if (b) elLeft.appendChild(b); });
+
+      // --- progress tracking ---
+      const done = new Set();
+      function updateProgress() {
+        const total = 17;
+        const n = done.size;
+        const pct = Math.round((n / total) * 100);
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('progress-pct').textContent = n + ' / ' + total + ' · ' + pct + '%';
+      }
+      document.querySelectorAll('.bubble .check-dot').forEach(dot => {
+        dot.addEventListener('click', (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const bubble = dot.closest('.bubble');
+          const key = bubble.dataset.key;
+          if (done.has(key)) { done.delete(key); bubble.classList.remove('done'); }
+          else { done.add(key); bubble.classList.add('done'); }
+          updateProgress();
+        });
+      });
+      document.getElementById('progress-reset').addEventListener('click', () => {
+        done.clear();
+        document.querySelectorAll('.bubble.done').forEach(b => b.classList.remove('done'));
+        updateProgress();
+      });
+      updateProgress();
+
+      // --- SVG connectors from center to each bubble ---
+      const svg = document.getElementById('radial-connectors');
+      const radial = document.getElementById('radial');
+
+      function drawConnectors() {
+        if (window.innerWidth < 900) { svg.innerHTML = ''; return; }
+        const rBox = radial.getBoundingClientRect();
+        svg.setAttribute('viewBox', '0 0 ' + rBox.width + ' ' + rBox.height);
+        svg.setAttribute('width', rBox.width);
+        svg.setAttribute('height', rBox.height);
+
+        const center = radial.querySelector('.radial-center').getBoundingClientRect();
+        const cx = center.left + center.width / 2 - rBox.left;
+        const cy = center.top + center.height / 2 - rBox.top;
+        const cr = center.width / 2;
+
+        let paths = '';
+        document.querySelectorAll('.bubble').forEach(b => {
+          const br = b.getBoundingClientRect();
+          const side = b.classList.contains('left-b') ? 'left' : 'right';
+          const bx = (side === 'left' ? br.right : br.left) - rBox.left;
+          const by = br.top + br.height / 2 - rBox.top;
+          const color = getComputedStyle(b).getPropertyValue('--bubble-color').trim() || '#ff9900';
+          // start just outside center circle, ending at bubble edge
+          const dx = bx - cx; const dy = by - cy; const len = Math.sqrt(dx*dx + dy*dy);
+          const sx = cx + (dx / len) * cr;
+          const sy = cy + (dy / len) * cr;
+          // control points for smooth curve
+          const c1x = sx + (bx - sx) * 0.55;
+          const c1y = sy;
+          const c2x = sx + (bx - sx) * 0.45;
+          const c2y = by;
+          paths += `<path d="M ${sx} ${sy} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${bx} ${by}" stroke="${color}"/>`;
+        });
+        svg.innerHTML = paths;
+      }
+
+      requestAnimationFrame(drawConnectors);
+      window.addEventListener('resize', drawConnectors);
+
+      initGlobalSearch('global-search', 'search-results');
+    })();
+  </script>
+</body>
+</html>
